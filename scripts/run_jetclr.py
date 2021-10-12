@@ -294,8 +294,8 @@ for epoch in range( args.n_epochs ):
         # get the validation reps
         with torch.no_grad():
             net.eval()
-            vl_reps_1 = F.normalize( net.forward_batchwise( torch.Tensor( vl_dat_1 ).transpose(1,2), args.batch_size, use_mask=args.mask, use_continuous_mask=args.cmask ).detach().cpu() ).numpy()
-            vl_reps_2 = F.normalize( net.forward_batchwise( torch.Tensor( vl_dat_2 ).transpose(1,2), args.batch_size, use_mask=args.mask, use_continuous_mask=args.cmask ).detach().cpu() ).numpy()
+            vl_reps_1 = F.normalize( net.forward_batchwise( torch.Tensor( vl_dat_1 ).transpose(1,2), args.batch_size, use_mask=args.mask, use_continuous_mask=args.cmask ).detach().cpu(), dim=-1 ).numpy()
+            vl_reps_2 = F.normalize( net.forward_batchwise( torch.Tensor( vl_dat_2 ).transpose(1,2), args.batch_size, use_mask=args.mask, use_continuous_mask=args.cmask ).detach().cpu(), dim=-1 ).numpy()
             net.train()
         # running the LCT on each rep layer
         auc_list = []
@@ -303,7 +303,7 @@ for epoch in range( args.n_epochs ):
         # loop through every representation layer
         for i in range(vl_reps_1.shape[1]):   
             # just want to use the 0th rep (i.e. directly from the transformer) for now
-            if i == 0:
+            if i == 2:
                 vl0_test = time.time()
                 out_dat_vl, out_lbs_vl, losses_vl = linear_classifier_test( linear_input_size, linear_batch_size, linear_n_epochs, "adam", linear_learning_rate, vl_reps_1[:,i,:], vl_lab_1, vl_reps_2[:,i,:], vl_lab_2 )
                 auc, imtafe = get_perf_stats( out_lbs_vl, out_dat_vl )
@@ -361,8 +361,8 @@ if args.trs:
     vl_dat_2 = translate_jets( vl_dat_2, width=args.trsw )
 with torch.no_grad():
     net.eval()
-    vl_reps_1 = F.normalize( net.forward_batchwise( torch.Tensor( vl_dat_1 ).transpose(1,2), args.batch_size, use_mask=args.mask, use_continuous_mask=args.cmask ).detach().cpu() ).numpy()
-    vl_reps_2 = F.normalize( net.forward_batchwise( torch.Tensor( vl_dat_2 ).transpose(1,2), args.batch_size, use_mask=args.mask, use_continuous_mask=args.cmask ).detach().cpu() ).numpy()
+    vl_reps_1 = F.normalize( net.forward_batchwise( torch.Tensor( vl_dat_1 ).transpose(1,2), args.batch_size, use_mask=args.mask, use_continuous_mask=args.cmask ).detach().cpu(), dim=-1 ).numpy()
+    vl_reps_2 = F.normalize( net.forward_batchwise( torch.Tensor( vl_dat_2 ).transpose(1,2), args.batch_size, use_mask=args.mask, use_continuous_mask=args.cmask ).detach().cpu(), dim=-1 ).numpy()
     net.train()
 
 # final LCT for each rep layer
