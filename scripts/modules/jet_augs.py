@@ -30,17 +30,12 @@ def translate_jets( batch, width=0.5 ):
     return shifted_batch
 
 
-def rotate_jets( batch, num_jets = 1 ):
+def rotate_jets( batch ):
     '''
     Input: batch of jets, shape (batchsize, 3, n_constit)
     dim 1 ordering: (pT, eta, phi)
     Output: batch of jets rotated independently in eta-phi, same shape as input
     '''
-    """
-    print(batch.shape)
-    split_batch = np.split(batch, num_jets, axis = 2)
-    print([x.shape for x in split_batch])
-    """
     rot_angle = np.random.rand(batch.shape[0])*2*np.pi
     c = np.cos(rot_angle)
     s = np.sin(rot_angle)
@@ -59,14 +54,14 @@ def normalise_pts( batch ):
     batch_norm[:,0,:] = np.nan_to_num(batch_norm[:,0,:]/np.sum(batch_norm[:,0,:], axis=1)[:, np.newaxis], posinf = 0.0, neginf = 0.0 )
     return batch_norm
 
-def rescale_pts( batch, pt_rescale_denom ):
+def rescale_pts( batch):
     '''
     Input: batch of jets, shape (batchsize, 3, n_constit)
     dim 1 ordering: (pT, eta, phi)
-    Output: batch of pT-rescaled jets, each constituent pT is rescaled by pt_rescale_denom, same shape as input
+    Output: batch of pT-rescaled jets, each constituent pT is rescaled by 600, same shape as input
     '''
     batch_rscl = batch.copy()
-    batch_rscl[:,0,:] = np.nan_to_num(batch_rscl[:,0,:]/pt_rescale_denom, posinf = 0.0, neginf = 0.0 )
+    batch_rscl[:,0,:] = np.nan_to_num(batch_rscl[:,0,:]/600., posinf = 0.0, neginf = 0.0 )
     return batch_rscl
 
 def crop_jets( batch, nc ):
